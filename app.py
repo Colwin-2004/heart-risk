@@ -20,9 +20,32 @@ st.title("💓 Heart Attack Risk Detector")
 st.write("Upload a medical report image or manually fill the details below to estimate your heart attack risk.")
 
 # OCR Function
+import requests
+
+OCR_API_KEY = "your_api_key_here"  # 🔁 Replace this with your actual key
+
 def extract_info_from_image(image):
-    text = pytesseract.image_to_string(image).lower()
     info = {}
+
+    # Convert image to bytes
+    img_bytes = image.convert("RGB")
+    from io import BytesIO
+    buffered = BytesIO()
+    img_bytes.save(buffered, format="JPEG")
+    img_data = buffered.getvalue()
+
+    # Send to OCR.space
+    response = requests.post(
+        "https://api.ocr.space/parse/image",
+        files={"filename": img_data},
+        data={"apikey": OCR_API_KEY, "language": "eng"},
+    )
+
+    try:
+        text = response.json()["ParsedResults"][0]["ParsedText"].lower()
+    except Exception as e:
+        st.error("OCR API failed to extract text.")
+        st.stop()
 
     def find_value(keywords, cast_type=float):
         for line in text.split('\n'):
@@ -43,7 +66,9 @@ def extract_info_from_image(image):
     info['BMI'] = find_value(['bmi'])
     info['heartRate'] = find_value(['heart rate', 'pulse'])
     info['glucose'] = find_value(['glucose'])
+
     return info
+
 
 # Image Upload and OCR
 uploaded_image = st.file_uploader("📤 Upload your medical report image", type=["png", "jpg", "jpeg"])
