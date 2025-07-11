@@ -2,7 +2,6 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import pickle
-import pytesseract
 from PIL import Image
 import os
 
@@ -22,7 +21,7 @@ st.write("Upload a medical report image or manually fill the details below to es
 # OCR Function
 import requests
 
-OCR_API_KEY = "your_api_key_here"  # 🔁 Replace this with your actual key
+OCR_API_KEY = "K88161714388957"  # 🔁 Replace this with your actual key
 
 def extract_info_from_image(image):
     info = {}
@@ -76,7 +75,7 @@ auto_filled = {}
 
 if uploaded_image:
     image = Image.open(uploaded_image)
-    st.image(image, caption="📄 Uploaded Report Preview", use_column_width=True)
+    st.image(image, caption="📄 Uploaded Report Preview", use_container_width=True)
     auto_filled = extract_info_from_image(image)
     st.success("✅ Information extracted from image where possible. Please review or fill the rest.")
 else:
